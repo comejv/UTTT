@@ -3,7 +3,9 @@ PHONY: all clean
 # Define required raylib variables
 PROJECT_NAME       ?= UTTT
 RAYLIB_VERSION     ?= 5.0.0
-RAYLIB_PATH        ?= /usr/local/lib/libraylib.so
+
+# Define output directory for compiled project
+TARGET_DIR         ?= ./bin/
 
 # Define compiler path on Windows
 COMPILER_PATH      ?= /usr/bin/gcc
@@ -331,7 +333,7 @@ OBJ_DIR = obj
 # Define all object files from source files
 SRC = $(call rwildcard, *.c, *.h)
 #OBJS = $(SRC:$(SRC_DIR)/%.c=$(OBJ_DIR)/%.o)
-OBJS ?= main.c
+OBJS ?= $(SRC_DIR)/main.c
 
 # For Android platform we call a custom Makefile.Android
 ifeq ($(PLATFORM),PLATFORM_ANDROID)
@@ -349,7 +351,7 @@ all:
 
 # Project target defined by PROJECT_NAME
 $(PROJECT_NAME): $(OBJS)
-	$(CC) -o $(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
+	$(CC) -o $(TARGET_DIR)$(PROJECT_NAME)$(EXT) $(OBJS) $(CFLAGS) $(INCLUDE_PATHS) $(LDFLAGS) $(LDLIBS) -D$(PLATFORM)
 
 # Compile source files
 # NOTE: This pattern will compile every module defined on $(OBJS)

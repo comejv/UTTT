@@ -1,14 +1,24 @@
-#include <raylib.h>
+#include "main.h"
 
-#define AUDIO_FOLDER_PATH "./ASSETS/AUDIO/"
-#define IMAGE_FOLDER_PATH "./ASSETS/IMAGES/"
-#define FONT_FOLDER_PATH "./ASSETS/FONTS/"
-#define AUDIO_FILE(name) AUDIO_FOLDER_PATH name
-#define IMAGE_FILE(name) IMAGE_FOLDER_PATH name
-#define FONT_FILE(name) FONT_FOLDER_PATH name
-
-int main()
+int main(int argc, char **argv)
 {
+    extern char *optarg;
+    extern int optind, opterr, optopt;
+
+    while (getopt(argc, argv, "f:") != -1)
+    {
+        switch (optopt)
+        {
+        case 'd':
+            DEBUG = 1;
+            DEBUG_LOG("Debug mode enabled");
+            break;
+        case '?':
+            printf("unknown option: %c\n", optopt);
+            break;
+        }
+    }
+
     // Initialization
     //--------------------------------------------------------------------------------------
     const int screenWidth = 800;
@@ -27,7 +37,8 @@ int main()
 
     Sound click = LoadSound(AUDIO_FILE("click.wav"));
 
-    Font filmNoirAventure = LoadFont(FONT_FILE("Film Noir Adventure.ttf"));
+    // Load font texture with bigger size so it looks better when scaled
+    Font filmNoirAventure = LoadFontEx(FONT_FILE("Film Noir Adventure.ttf"), 100, NULL, 0);
 
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
@@ -48,8 +59,15 @@ int main()
             }
         }
 
+        if (DEBUG)
+        {
+            DrawFPS(10, 10);
+        }
+
         EndDrawing();
     }
+
+    DEBUG_LOG("ESC or close button pressed, exiting...");
 
     // De-Initialization
     //--------------------------------------------------------------------------------------
