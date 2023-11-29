@@ -1,4 +1,19 @@
 #include "main.h"
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
+void GridParameters(Rectangle *grid, int screenWidth, int screenHeight, int *PtrGridLeftOffset, int *PtrGridRightOffset, int *PtrGridUpOffset, int *PtrGridDownOffset, int *PtrGridHeight){
+    *PtrGridLeftOffset = screenWidth / 10;
+    *PtrGridRightOffset = screenWidth / 10;
+    *PtrGridUpOffset = screenHeight / 10;
+    *PtrGridDownOffset = screenHeight / 10;
+    *PtrGridHeight = MIN(screenHeight - *PtrGridUpOffset - *PtrGridDownOffset, screenWidth - *PtrGridLeftOffset - *PtrGridRightOffset);
+    grid->height = *PtrGridHeight;
+    grid->width = *PtrGridHeight;
+    grid->x = *PtrGridLeftOffset;
+    grid->y = *PtrGridUpOffset;
+    return;
+}
 
 int main(int argc, char **argv)
 {
@@ -21,9 +36,12 @@ int main(int argc, char **argv)
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
+    int screenWidth = 800;
+    int screenHeight = 450;
+    int gridLeftOffset, gridRightOffset, gridUpOffset, gridDownOffset, gridHeight;
+    Rectangle grid;
+    GridParameters(&grid, screenWidth, screenHeight, &gridLeftOffset, &gridRightOffset, &gridUpOffset, &gridDownOffset, &gridHeight);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "UTTT");
     InitAudioDevice();
 
@@ -33,32 +51,19 @@ int main(int argc, char **argv)
 
     Vector2 mousePoint = {0.0f, 0.0f};
 
-    Rectangle btnBounds = {275, 150, 250, 200};
-
-    Sound click = LoadSound(AUDIO_FILE("click.wav"));
-
-    // Load font texture with bigger size so it looks better when scaled
-    Font filmNoirAventure = LoadFontEx(FONT_FILE("Film Noir Adventure.ttf"), 100, NULL, 0);
-
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
+        // Modify screenWidth, screenHeight and Offset 
+        if (IsWindowResized()){
+            screenWidth = GetScreenWidth();
+            screenHeight = GetScreenHeight();
+            GridParameters(&grid, screenWidth, screenHeight, &gridLeftOffset, &gridRightOffset, &gridUpOffset, &gridDownOffset, &gridHeight);
+        }
         mousePoint = GetMousePosition();
         BeginDrawing();
         ClearBackground(RAYWHITE);
-        DrawRectangle(btnBounds.x, btnBounds.y, btnBounds.width, btnBounds.height, BLUE);
-        DrawTextEx(filmNoirAventure, "UTTT", (Vector2){btnBounds.x + 40, btnBounds.y + 40}, 100, 3, BLACK);
-
-        if (CheckCollisionPointRec(mousePoint, btnBounds))
-        {
-            DrawRectangle(btnBounds.x, btnBounds.y, btnBounds.width, btnBounds.height, RED);
-            DrawTextEx(filmNoirAventure, "UTTT", (Vector2){btnBounds.x + 40, btnBounds.y + 40}, 100, 3, BLACK);
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            {
-                PlaySound(click);
-            }
-        }
-
+        DrawRectangleLinesEx(grid, 5, BLACK); 
         if (DEBUG)
         {
             DrawFPS(10, 10);
@@ -73,7 +78,6 @@ int main(int argc, char **argv)
     //--------------------------------------------------------------------------------------
     CloseWindow(); // Close window and OpenGL context
     CloseAudioDevice();
-    UnloadSound(click);
     //--------------------------------------------------------------------------------------
 
     return 0;
