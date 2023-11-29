@@ -6,6 +6,7 @@ RAYLIB_VERSION     ?= 5.0.0
 
 # Define output directory for compiled project
 TARGET_DIR         ?= ./bin/
+$(shell mkdir -p $(TARGET_DIR))
 
 # Define compiler path on Windows
 COMPILER_PATH      ?= /usr/bin/gcc
