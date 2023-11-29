@@ -6,6 +6,8 @@
 #include <raylib.h>
 #include "debug.h"
 
+#define MIN(a, b) (((a) < (b)) ? (a) : (b))
+#define MAX(a, b) (((a) > (b)) ? (a) : (b))
 #define AUDIO_FOLDER_PATH "./ASSETS/AUDIO/"
 #define IMAGE_FOLDER_PATH "./ASSETS/IMAGES/"
 #define FONT_FOLDER_PATH "./ASSETS/FONTS/"
