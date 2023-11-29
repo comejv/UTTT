@@ -1,5 +1,84 @@
 #include "main.h"
 
+/*
+GridParameters : A function to get parameters for the main grid depending of screenWidth and screenHeight
+Parameters : 
+    Rectangle *grid : A pointer to the rectangle representating the main grid which will be modified 
+    int screenWidth : current screen width
+    int screenHeight :  current screen height
+    int *PtrGridLeftOffset : pointer to gridLeftOffset which will be modified 
+    int *PtrGridLeftOffset : pointer to gridRightOffset which will be modified 
+    int *PtrGridLeftOffset : pointer to gridUpOffset which will be modified 
+    int *PtrGridLeftOffset : pointer to gridDownOffset which will be modified 
+Return : None 
+Side effect :
+    grid, gridLeftOffset, gridRightOffset, gridUpOffset, gridDownOffset get modified 
+*/
+void GridParameters(Rectangle *grid, int screenWidth, int screenHeight, int *PtrGridLeftOffset, int *PtrGridRightOffset, int *PtrGridUpOffset, int *PtrGridDownOffset)
+{
+    *PtrGridLeftOffset = screenWidth / 10;
+    *PtrGridRightOffset = screenWidth / 10;
+    *PtrGridUpOffset = screenHeight / 10;
+    *PtrGridDownOffset = screenHeight / 10;
+    int gridHeight = MIN(screenHeight - *PtrGridUpOffset - *PtrGridDownOffset, screenWidth - *PtrGridLeftOffset - *PtrGridRightOffset);
+    grid->height = gridHeight;
+    grid->width = gridHeight;
+    grid->x = *PtrGridLeftOffset;
+    grid->y = *PtrGridUpOffset;
+    return;
+}
+
+/*
+SubGridParameters : A function to get parameters for a 3*3 sub grid based on it's container 
+Parameters : 
+    Rectangle *subgrid : A pointer to the rectangle representating the sub grid which will be modified 
+    Rectangle grid : the container's grid 
+    int i,j : coordonates of the subgrid in the main one
+Return : None 
+Side effect :
+    subgrid get modified 
+*/
+void SubGridParameters(Rectangle *subgrid, Rectangle grid, int i, int j)
+{
+    subgrid->height = grid.height / 3;
+    subgrid->width = grid.width / 3;
+    subgrid->x = grid.x + ((grid.width / 3) * i);
+    subgrid->y = grid.y + ((grid.height / 3) * j);
+    return;
+}
+
+/*
+DrawMainGrid : A function to draw the main grid and it's tiles depending of an initial rectangle 
+Parameters : Rectangle grid, the main rectangle that contain the grid 
+Return : None 
+Side effect : Draw the grid in the main window using SubGridParameters
+*/
+void DrawMainGrid(Rectangle grid)
+{
+    Rectangle subgrid;
+    Rectangle tile;
+    // Building the initial grid
+    DrawRectangleLinesEx(grid, 8, BLACK);
+    // Draw the others grid based on the initial one
+    for (int i = 0; i < 3; i++)
+    {
+        for (int j = 0; j < 3; j++)
+        {
+            SubGridParameters(&subgrid, grid, i, j);
+            DrawRectangleLinesEx(subgrid, 5, BLACK);
+            // Draw tiles in the subgrid
+            for (int tile_i = 0; tile_i < 3; tile_i++)
+            {
+                for (int tile_j = 0; tile_j < 3; tile_j++)
+                {
+                    SubGridParameters(&tile, subgrid, tile_i, tile_j);
+                    DrawRectangleLinesEx(tile, 1, BLACK);
+                }
+            }
+        }
+    }
+}
+
 int main(int argc, char **argv)
 {
     extern char *optarg;
@@ -21,9 +100,13 @@ int main(int argc, char **argv)
 
     // Initialization
     //--------------------------------------------------------------------------------------
-    const int screenWidth = 800;
-    const int screenHeight = 450;
-
+    int screenWidth = 800;
+    int screenHeight = 450;
+    int gridLeftOffset, gridRightOffset, gridUpOffset, gridDownOffset;
+    bool NEED_TO_DRAW = true;
+    Rectangle grid;
+    GridParameters(&grid, screenWidth, screenHeight, &gridLeftOffset, &gridRightOffset, &gridUpOffset, &gridDownOffset);
+    SetConfigFlags(FLAG_WINDOW_RESIZABLE);
     InitWindow(screenWidth, screenHeight, "UTTT");
     InitAudioDevice();
 
@@ -33,37 +116,25 @@ int main(int argc, char **argv)
 
     Vector2 mousePoint = {0.0f, 0.0f};
 
-    Rectangle btnBounds = {275, 150, 250, 200};
-
-    Sound click = LoadSound(AUDIO_FILE("click.wav"));
-
-    // Load font texture with bigger size so it looks better when scaled
-    Font filmNoirAventure = LoadFontEx(FONT_FILE("Film Noir Adventure.ttf"), 100, NULL, 0);
-
     // Main game loop
     while (!WindowShouldClose()) // Detect window close button or ESC key
     {
-        mousePoint = GetMousePosition();
+        // Modify screenWidth, screenHeight and Offset
+        if (IsWindowResized())
+        {
+            NEED_TO_DRAW = true;
+            screenWidth = GetScreenWidth();
+            screenHeight = GetScreenHeight();
+            GridParameters(&grid, screenWidth, screenHeight, &gridLeftOffset, &gridRightOffset, &gridUpOffset, &gridDownOffset);
+        }
         BeginDrawing();
-        ClearBackground(RAYWHITE);
-        DrawRectangle(btnBounds.x, btnBounds.y, btnBounds.width, btnBounds.height, BLUE);
-        DrawTextEx(filmNoirAventure, "UTTT", (Vector2){btnBounds.x + 40, btnBounds.y + 40}, 100, 3, BLACK);
-
-        if (CheckCollisionPointRec(mousePoint, btnBounds))
+        mousePoint = GetMousePosition();
+        if (NEED_TO_DRAW)
         {
-            DrawRectangle(btnBounds.x, btnBounds.y, btnBounds.width, btnBounds.height, RED);
-            DrawTextEx(filmNoirAventure, "UTTT", (Vector2){btnBounds.x + 40, btnBounds.y + 40}, 100, 3, BLACK);
-            if (IsMouseButtonPressed(MOUSE_BUTTON_LEFT))
-            {
-                PlaySound(click);
-            }
+            NEED_TO_DRAW = false;
+            ClearBackground(RAYWHITE);
+            DrawMainGrid(grid);
         }
-
-        if (DEBUG)
-        {
-            DrawFPS(10, 10);
-        }
-
         EndDrawing();
     }
 
@@ -73,7 +144,6 @@ int main(int argc, char **argv)
     //--------------------------------------------------------------------------------------
     CloseWindow(); // Close window and OpenGL context
     CloseAudioDevice();
-    UnloadSound(click);
     //--------------------------------------------------------------------------------------
 
     return 0;
