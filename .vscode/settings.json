@@ -1,6 +1,10 @@
 {
     "files.associations": {
+        "*.rmd": "markdown",
+        "*.sql": "sql",
         "raylib.h": "c",
-        "debug.h": "c"
+        "debug.h": "c",
+        "buttons.h": "c",
+        "macros.h": "c"
     }
 }
