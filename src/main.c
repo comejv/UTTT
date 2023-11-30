@@ -3,19 +3,17 @@
 /*
 AddButton : add a button to an array of buttons
 Parameters:
-    Button *buttons
     float height
     float width
     float posX
     float posY
     Texture2D texture : if texture are defined, ignore colors
     Texture2D textureHover : optional
-    Color col : used if no texture is defined
-    Color colHover : optional
+    Color col : used if no texture is defined. Will be darkened when hovered
 */
-void AddButton(Button *buttons, float buttonHeight, float buttonWidth, float posX, float posY, const char *texturePath, const char *textureHoverPath, Color col, Color colHover)
+Button *CreateButton(float buttonHeight, float buttonWidth, float posX, float posY, char *text, const char *texturePath, const char *textureHoverPath, Color col)
 {
-    Button newButton;
+    Button *newButton = (Button *)malloc(sizeof(Button));
     Rectangle rectPos;
 
     rectPos.height = buttonHeight;
@@ -23,21 +21,25 @@ void AddButton(Button *buttons, float buttonHeight, float buttonWidth, float pos
     rectPos.x = posX;
     rectPos.y = posY;
 
-    newButton.rect = rectPos;
+    newButton->rect = rectPos;
+
+    newButton->text = text;
 
     if (texturePath != NULL)
     {
-        newButton.img = LoadTexture(texturePath);
+        newButton->img = LoadTexture(texturePath);
         if (textureHoverPath != NULL)
         {
-            newButton.hoverImg = LoadTexture(textureHoverPath);
+            newButton->imgHover = LoadTexture(textureHoverPath);
         }
     }
     else
     {
-        newButton.col = col;
-        newButton.hoverCol = colHover;
+        newButton->col = col;
+        newButton->colHover = ColorBrightness(col, -.5f);
     }
+
+    return newButton;
 }
 
 /*

@@ -25,10 +25,11 @@ typedef enum
 typedef struct
 {
     Rectangle rect;
+    char *text;
     Texture2D img;
-    Texture2D hoverImg;
+    Texture2D imgHover;
     Color col;
-    Color hoverCol;
+    Color colHover;
     ButtonState state;
 } Button;
 
