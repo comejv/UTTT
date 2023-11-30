@@ -225,6 +225,11 @@ int main(int argc, char **argv)
             screenWidth = GetScreenWidth();
             screenHeight = GetScreenHeight();
             getGridGraphicParameters(mainGrid, screenWidth, screenHeight, &gridLeftOffset, &gridRightOffset, &gridUpOffset, &gridDownOffset);
+            for (int i = 0; i < nbButtons; i++)
+            {
+                buttons[i]->rect.x = mainGrid->mainRectangle.x + mainGrid->mainRectangle.width;
+                buttons[i]->rect.y = mainGrid->mainRectangle.y + (buttons[i]->rect.height * i);
+            }
         }
 
         if (IsMouseButtonReleased(MOUSE_BUTTON_LEFT))
