@@ -104,7 +104,7 @@ int main(int argc, char **argv)
             sprintf(text, "%d %d", x, y);
             INFO_LOG("Player clicked on : %d %d position", x, y);
         }
-        if (NEED_TO_DRAW)
+        if (1) // NEED_TO_DRAW
         {
             NEED_TO_DRAW = false;
             ClearBackground(RAYWHITE);
