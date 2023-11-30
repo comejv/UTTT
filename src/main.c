@@ -1,18 +1,58 @@
 #include "main.h"
 
 /*
+AddButton : add a button to an array of buttons
+Parameters:
+    Button *buttons
+    float height
+    float width
+    float posX
+    float posY
+    Texture2D texture : if texture are defined, ignore colors
+    Texture2D textureHover : optional
+    Color col : used if no texture is defined
+    Color colHover : optional
+*/
+void AddButton(Button *buttons, float buttonHeight, float buttonWidth, float posX, float posY, const char *texturePath, const char *textureHoverPath, Color col, Color colHover)
+{
+    Button newButton;
+    Rectangle rectPos;
+
+    rectPos.height = buttonHeight;
+    rectPos.width = buttonWidth;
+    rectPos.x = posX;
+    rectPos.y = posY;
+
+    newButton.rect = rectPos;
+
+    if (texturePath != NULL)
+    {
+        newButton.img = LoadTexture(texturePath);
+        if (textureHoverPath != NULL)
+        {
+            newButton.hoverImg = LoadTexture(textureHoverPath);
+        }
+    }
+    else
+    {
+        newButton.col = col;
+        newButton.hoverCol = colHover;
+    }
+}
+
+/*
 GridParameters : A function to get parameters for the main grid depending of screenWidth and screenHeight
-Parameters : 
-    Rectangle *grid : A pointer to the rectangle representating the main grid which will be modified 
+Parameters :
+    Rectangle *grid : A pointer to the rectangle representating the main grid which will be modified
     int screenWidth : current screen width
     int screenHeight :  current screen height
-    int *PtrGridLeftOffset : pointer to gridLeftOffset which will be modified 
-    int *PtrGridLeftOffset : pointer to gridRightOffset which will be modified 
-    int *PtrGridLeftOffset : pointer to gridUpOffset which will be modified 
-    int *PtrGridLeftOffset : pointer to gridDownOffset which will be modified 
-Return : None 
+    int *PtrGridLeftOffset : pointer to gridLeftOffset which will be modified
+    int *PtrGridLeftOffset : pointer to gridRightOffset which will be modified
+    int *PtrGridLeftOffset : pointer to gridUpOffset which will be modified
+    int *PtrGridLeftOffset : pointer to gridDownOffset which will be modified
+Return : None
 Side effect :
-    grid, gridLeftOffset, gridRightOffset, gridUpOffset, gridDownOffset get modified 
+    grid, gridLeftOffset, gridRightOffset, gridUpOffset, gridDownOffset get modified
 */
 void GridParameters(Rectangle *grid, int screenWidth, int screenHeight, int *PtrGridLeftOffset, int *PtrGridRightOffset, int *PtrGridUpOffset, int *PtrGridDownOffset)
 {
@@ -29,14 +69,14 @@ void GridParameters(Rectangle *grid, int screenWidth, int screenHeight, int *Ptr
 }
 
 /*
-SubGridParameters : A function to get parameters for a 3*3 sub grid based on it's container 
-Parameters : 
-    Rectangle *subgrid : A pointer to the rectangle representating the sub grid which will be modified 
-    Rectangle grid : the container's grid 
+SubGridParameters : A function to get parameters for a 3*3 sub grid based on it's container
+Parameters :
+    Rectangle *subgrid : A pointer to the rectangle representating the sub grid which will be modified
+    Rectangle grid : the container's grid
     int i,j : coordonates of the subgrid in the main one
-Return : None 
+Return : None
 Side effect :
-    subgrid get modified 
+    subgrid get modified
 */
 void SubGridParameters(Rectangle *subgrid, Rectangle grid, int i, int j)
 {
@@ -48,9 +88,9 @@ void SubGridParameters(Rectangle *subgrid, Rectangle grid, int i, int j)
 }
 
 /*
-DrawMainGrid : A function to draw the main grid and it's tiles depending of an initial rectangle 
-Parameters : Rectangle grid, the main rectangle that contain the grid 
-Return : None 
+DrawMainGrid : A function to draw the main grid and it's tiles depending of an initial rectangle
+Parameters : Rectangle grid, the main rectangle that contain the grid
+Return : None
 Side effect : Draw the grid in the main window using SubGridParameters
 */
 void DrawMainGrid(Rectangle grid)

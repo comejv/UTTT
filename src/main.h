@@ -15,4 +15,21 @@
 #define IMAGE_FILE(name) IMAGE_FOLDER_PATH name
 #define FONT_FILE(name) FONT_FOLDER_PATH name
 
+typedef enum
+{
+    NORMAL,
+    HOVER,
+    PRESSED
+} ButtonState;
+
+typedef struct
+{
+    Rectangle rect;
+    Texture2D img;
+    Texture2D hoverImg;
+    Color col;
+    Color hoverCol;
+    ButtonState state;
+} Button;
+
 #endif // MAIN_H
